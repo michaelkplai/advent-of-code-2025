@@ -1,4 +1,14 @@
 import { getInput } from "../utils";
+import {
+  solve,
+  Model,
+  Constraint,
+  Coefficients,
+  OptimizationDirection,
+  Options,
+  Solution,
+  equalTo,
+} from "yalps";
 
 const exampleInput = `[.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}
 [...#.] (0,2,3,4) (2,3) (0,4) (0,1,2) (1,2,3,4) {7,5,12,7,2}
@@ -101,10 +111,74 @@ function solvePart1(input: string) {
   return answer;
 }
 
-function solvePart2(input: string) {}
+function solvePart2(input: string) {
+  type Problem = {
+    buttonVectors: number[][];
+    targetVector: number[];
+  };
+  const problems = input.split("\n").map((line) => {
+    const lines = line.split(" ");
+    const targetVector = lines.at(-1)!.slice(1, -1).split(",").map(Number);
+
+    const buttonVectorsStr = lines.slice(1, -1);
+    const buttonVectors = buttonVectorsStr.map((vectorStr) => {
+      const vectorStrIndexes = vectorStr.slice(1, -1).split(",").map(Number);
+      const indices = new Set(vectorStrIndexes);
+
+      const buttonVector = Array.from(
+        { length: targetVector.length },
+        (_, i) => {
+          if (indices.has(i)) return 1;
+          else return 0;
+        }
+      );
+      return buttonVector;
+    });
+
+    const problem: Problem = {
+      buttonVectors,
+      targetVector,
+    };
+    return problem;
+  });
+
+  let answer = 0;
+
+  for (const problem of problems) {
+    const { buttonVectors, targetVector } = problem;
+
+    const model: Model = {
+      direction: "minimize",
+      objective: "coefficient",
+      constraints: Object.fromEntries(
+        targetVector.map((val, i) => {
+          return [i, equalTo(val)];
+        })
+      ),
+      variables: Object.fromEntries(
+        buttonVectors.map((buttonVector, buttonIndex) => [
+          buttonIndex,
+          Object.fromEntries([
+            ...buttonVector.map((val, i) => {
+              return [i, val];
+            }),
+            ["coefficient", 1],
+          ]),
+        ])
+      ),
+      integers: true,
+    };
+
+    const solution = solve(model);
+
+    answer += solution.result;
+  }
+
+  return answer;
+}
 
 console.log(solvePart1(exampleInput));
 console.log(solvePart1(input1));
 
-// console.log(solvePart2(exampleInput));
-// console.log(solvePart2(input1));
+console.log(solvePart2(exampleInput));
+console.log(solvePart2(input1));
