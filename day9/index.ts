@@ -56,17 +56,6 @@ function solvePart2(input: string) {
   type VerticalLine = { x: number; y1: number; y2: number };
   type HorizontalLine = { y: number; x1: number; x2: number };
 
-  function hasOverlap(
-    verticalLines: VerticalLine[],
-    horizontalLines: HorizontalLine[]
-  ) {
-    for (const verticalLine of verticalLines) {
-      for (const horizontalLine of horizontalLines) {
-      }
-    }
-    return false;
-  }
-
   const verticalLines: VerticalLine[] = [];
   const horizontalLines: HorizontalLine[] = [];
 
@@ -86,6 +75,29 @@ function solvePart2(input: string) {
     }
   }
 
+  // This logic is just wrong blehhh
+  function hasOverlap(x1: number, x2: number, y1: number, y2: number) {
+    for (const verticalLine of verticalLines) {
+      if (verticalLine.x <= x1) continue;
+      if (verticalLine.x >= x2) continue;
+      if (verticalLine.y1 >= y2) continue;
+      if (verticalLine.y2 <= y1) continue;
+
+      return true;
+    }
+
+    for (const horizontalLine of horizontalLines) {
+      if (horizontalLine.y <= y1) continue;
+      if (horizontalLine.y >= y2) continue;
+      if (horizontalLine.x1 >= x2) continue;
+      if (horizontalLine.x2 <= x1) continue;
+
+      return true;
+    }
+
+    return false;
+  }
+
   let maxArea = -Infinity;
 
   for (let i = 0; i < redTiles.length; i++) {
@@ -93,35 +105,13 @@ function solvePart2(input: string) {
       const [x1, y1] = redTiles[i];
       const [x2, y2] = redTiles[j];
 
-      const verticalLinesToCheck: VerticalLine[] = [
-        {
-          x: x1,
-          y1: Math.min(y1, y2),
-          y2: Math.max(y1, y2),
-        },
-        {
-          x: x2,
-          y1: Math.min(y1, y2),
-          y2: Math.max(y1, y2),
-        },
-      ];
-
-      const horizontalLinesToCheck: HorizontalLine[] = [
-        {
-          y: y1,
-          x1: Math.min(x1, x2),
-          x2: Math.max(x1, x2),
-        },
-        {
-          y: y2,
-          x1: Math.min(x1, x2),
-          x2: Math.max(x1, x2),
-        },
-      ];
-
       if (
-        hasOverlap(verticalLinesToCheck, horizontalLines) ||
-        hasOverlap(verticalLines, horizontalLinesToCheck)
+        hasOverlap(
+          Math.min(x1, x2),
+          Math.max(x1, x2),
+          Math.min(y1, y2),
+          Math.max(y1, y2)
+        )
       ) {
         continue;
       }
@@ -137,8 +127,8 @@ function solvePart2(input: string) {
   return maxArea;
 }
 
-console.log(solvePart1(exampleInput));
-console.log(solvePart1(input1));
+// console.log(solvePart1(exampleInput));
+// console.log(solvePart1(input1));
 
 console.log(solvePart2(exampleInput));
-console.log(solvePart2(input1));
+// console.log(solvePart2(input1));
