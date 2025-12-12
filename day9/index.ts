@@ -41,18 +41,6 @@ function solvePart2(input: string) {
     .map((row) => row.split(",").map(Number))
     .map(([x, y]) => [x, y] as const);
 
-  // const xValues = redTiles.map(([x]) => x);
-  // const yValues = redTiles.map(([_, y]) => y);
-
-  // const [minX, maxX] = [Math.min(...xValues), Math.max(...xValues)];
-  // const [minY, maxY] = [Math.min(...yValues), Math.max(...yValues)];
-  // console.log({ minX, maxX });
-  // console.log({ minY, maxY });
-
-  // const gridByXY = Array.from({ length: maxX }, () =>
-  //   Array.from({ length: maxY }, () => 0)
-  // );
-
   type VerticalLine = { x: number; y1: number; y2: number };
   type HorizontalLine = { y: number; x1: number; x2: number };
 
@@ -75,7 +63,7 @@ function solvePart2(input: string) {
     }
   }
 
-  // This logic is just wrong blehhh
+  // This answer isn't actually correct, doesn't account for concavity
   function hasOverlap(x1: number, x2: number, y1: number, y2: number) {
     for (const verticalLine of verticalLines) {
       if (verticalLine.x <= x1) continue;
@@ -127,8 +115,8 @@ function solvePart2(input: string) {
   return maxArea;
 }
 
-// console.log(solvePart1(exampleInput));
-// console.log(solvePart1(input1));
+console.log(solvePart1(exampleInput));
+console.log(solvePart1(input1));
 
 console.log(solvePart2(exampleInput));
-// console.log(solvePart2(input1));
+console.log(solvePart2(input1));
